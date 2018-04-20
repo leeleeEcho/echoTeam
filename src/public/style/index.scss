@@ -1,0 +1,208 @@
+@import './Nprogress.scss';
+
+.personnelduty{
+    padding-left: 40px;
+    padding-top: 20px;
+    .duty-item{
+        margin-bottom: 30px;
+        .duty-item-name{
+            display: inline-block;
+            width:100px;
+            text-align: right;
+            margin-right: 15px;
+        }
+        .duty-item-value{
+            display: inline-block;
+            vertical-align: text-top;
+        }
+        .duty-item-button{
+            display: inline-block;
+            vertical-align: bottom;
+            margin-left: 25px;
+        }
+    }
+}
+.form-section-backcolor{
+    background: #f7f7f7;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+.stock-thumbnail{
+    width:90px;
+    height: 60px;
+    background: #ccc;
+}
+.input-section{
+    float: left;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.form-result-notice{
+    display: inline;
+    margin-left: 20px;
+}
+.newTracklogform{
+    padding-left: 30px;
+    input{
+        width:200px;
+    }
+    .ant-select{
+        width:200px;
+    }
+    .ant-form-item{
+        margin-bottom: 5px !important;
+    }
+    .ant-form-item-label{
+        width: 100px;
+        margin-right: 10px;
+    }
+}
+
+.page-top-button{
+    .ant-dropdown-trigger{
+        margin-left: 10px;
+    }
+}
+.page-layout{
+    .ant-layout{
+        background: #fff;
+    }
+}
+//Header style
+
+.header{
+    box-shadow: 0 2px 8px #f0f1f2;
+    z-index: 0;
+    .ant-menu-item-selected > a{
+        color: #0aa89e !important;
+    }
+}
+
+
+
+.userInfo{
+    position: absolute;
+    top: 0;
+    right: 20px;
+    line-height: 64px;
+    color: rgba(255, 255, 255, 0.65);
+}
+.ant-layout-header{
+    background: #fff;
+}
+.logo {
+    width: 140px;
+    height: 48px;
+    background: url('../images/logo.png') no-repeat;
+    background-size: 100% 100%;
+    margin: 7px 10px 0 0;
+    float: left;
+}
+#root,.page-layout{
+    height: 100%;
+}
+.page-layout {
+    .ant-menu-inline .ant-menu-item{
+        font-size: 12px;
+    }
+    .ant-breadcrumb{
+        font-size: 12px;
+    }
+}
+.page-content-form{
+    padding-top: 10px;
+    margin-bottom: 20px;
+    .ant-form label{font-size:12px;}
+    .ant-form-item-control-wrapper{
+        display: inline-block;
+        vertical-align: sub;
+    }
+}
+.no-margin-row{
+    .ant-form-item{
+        margin-bottom: 0;
+    }
+}
+.page-content{
+    .ant-table{font-size:12px;}
+}
+.userLevelForm{
+    .ant-form {
+        label{
+            font-size: 12px;
+        }
+    }
+}
+
+.hide{
+    display: none;
+}
+a.disabled {
+    color: rgba(0, 0, 0, 0.7);
+    text-decoration: none;
+}
+a.disabled:hover{
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.ant-form-item{
+    margin-bottom: 10px !important;
+}
+.ant-table-thead > tr > th{
+    text-align: center !important;
+}
+.ant-table-tbody > tr > td{
+    text-align: center !important;
+}
+
+.ql-snow .ql-picker-label::before{
+    vertical-align: top;
+}
+.articleModalShow{
+    display: block;
+}
+.articleModalHide{
+    display: none;
+}
+// .demo-editor{
+//     border:1px solid #F1F1F1;
+// }
+.modal-cms-popup{
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,.5);
+
+}
+.vertical-center-modal {
+    text-align: center;
+    white-space: nowrap;
+  }
+  .vertical-center-modal:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    width: 0;
+  }
+  
+  .vertical-center-modal .ant-modal {
+    display: inline-block;
+    vertical-align: middle;
+    top: 0;
+  }
+
+.modal-editor-upload-img{
+    margin:0 auto;
+}
+.ql-container{
+    height: 300px !important;
+}
+
+
+.ant-slider-track{
+    background: #0aa89e !important;
+}
+.ant-slider-rail{
+    background: #ccc !important;
+}
+

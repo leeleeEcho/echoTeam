@@ -1,0 +1,13 @@
+{
+    "apps": [
+        {
+            "name": "ZenGold_backOffice_v2.0",
+            "script": "server.js",
+            "exec_mode": "cluster_mode",
+            "instances": 1,
+            "error_file": "/tmp/nakedsurf_server_error.log",
+            "out_file": "/tmp/snakedsurf_server_out.log",
+            "log_date_format": "YYYY-MM-DD HH:mm Z"
+        }
+    ]
+}
