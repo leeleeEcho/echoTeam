@@ -37,6 +37,7 @@ module.exports = function (sequelize, DataTypes) {
         Employees.hasMany(models.LeaveDetail, {foreignKey:'uid'});
         Employees.hasMany(models.Customer, {foreignKey:'belongSale'});
         Employees.hasMany(models.customerConsult, {foreignKey:'salePerson'});
+        Employees.hasMany(models.NeedVisited, {foreignKey:'salesMan'})
     }
     return Employees;
 }

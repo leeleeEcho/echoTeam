@@ -2,13 +2,13 @@
 
 const express = require('express');
 const router = express.Router();
-const controller = require('../controller/customer');
+const controller = require('../controller/email');
 const util = require('../lib/util');
 const statusMessage = require('../lib/statusMessage').msg;
 
 
-router.post('/insertCustomer', function (req, res) {
-    return controller.insertCustomer(req, res)
+router.post('/insertEmail', function (req, res) {
+    return controller.insertEmail(req, res)
         .then((data) => {
             res.json({
                 data: data,
@@ -24,8 +24,8 @@ router.post('/insertCustomer', function (req, res) {
         })
 });
 
-router.get('/getCustomer', function (req, res) {
-    return controller.getCustomer(req, res)
+router.get('/getEmail', function (req, res) {
+    return controller.getEmail(req, res)
         .then((data) => {
             res.json({
                 data: data,
@@ -41,8 +41,8 @@ router.get('/getCustomer', function (req, res) {
         })
 });
 
-router.patch('/updateCustomer', function (req, res) {
-    return controller.updateCustomer(req, res)
+router.patch('/updateEmail', function (req, res) {
+    return controller.updateEmail(req, res)
         .then((data) => {
             res.json({
                 data: data,
@@ -58,42 +58,8 @@ router.patch('/updateCustomer', function (req, res) {
         })
 });
 
-router.delete('/delCustomer', function (req, res) {
-    return controller.delCustomer(req, res)
-        .then((data) => {
-            res.json({
-                data: data,
-                status:200
-            });
-        })
-        .catch((error) => {
-            res.json({
-                status:error.status,
-                message: error.message,
-                more:error.error        
-            });
-        })
-});
-
-router.post('/login', function (req, res) {
-    return controller.login(req, res)
-        .then((data) => {
-            res.json({
-                data: data,
-                status:200
-            });
-        })
-        .catch((error) => {
-            res.json({
-                status:error.status,
-                message: error.message,
-                more:error.error        
-            });
-        })
-});
-
-router.patch('/freeCustomer', function (req, res) {
-    return controller.freeCustomer(req, res)
+router.delete('/delEmail', function (req, res) {
+    return controller.delEmail(req, res)
         .then((data) => {
             res.json({
                 data: data,

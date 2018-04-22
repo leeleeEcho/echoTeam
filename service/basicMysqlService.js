@@ -289,4 +289,21 @@ BaseService.prototype.sumRecords = function (where, column, options) {
         })
 };
 
+//根据id自增记录的某字段,多字段时field为数组，自定义增值optios为{by:n}
+BaseService.prototype.incrementRecords = function (field,where, options) {
+    if (!options) {
+        options = {};
+    }
+    return this.model.increment(field, {
+        where: where
+    }, options)
+        .catch((error) => {
+            return Promise.reject({
+                message: this.modelName + statusMsg[50003],
+                status: 50003,
+                error: error.stack
+            })
+        })
+};
+
 module.exports = BaseService;

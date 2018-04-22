@@ -20,11 +20,12 @@ module.exports = function (sequelize, DataTypes) {
         userStatus:DataTypes.INTEGER,//用户状态
         trueName:DataTypes.STRING,//姓名
         password:DataTypes.STRING,
+        userFreeStatus:DataTypes.INTEGER,//用户释放状态，初始为0，1，2，3.3表示进入冷冻库
         cash:DataTypes.DECIMAL,//金额
         points:DataTypes.INTEGER,//积分
-        registerDate:DataTypes.DATE,
+        registerDate:DataTypes.INTEGER,
         registerIP:DataTypes.STRING,//ip
-        lastLoginDate:DataTypes.DATE,//上次登陆日期
+        lastLoginDate:DataTypes.INTEGER,//上次登陆日期
         lastLoginIP:DataTypes.STRING,//上次登录ip
         createdAt:DataTypes.DATE,
         updatedAt:DataTypes.DATE,
@@ -35,7 +36,8 @@ module.exports = function (sequelize, DataTypes) {
     Customer.associate = function (models) {
         Customer.belongsTo(models.CustomerFrom, {foreignKey:'customerFrom'});
         Customer.belongsTo(models.Employees, {foreignKey:'belongSale'});
-        Customer.belongsTo(models.GroupLevel, {foreignKey:'belongGroup'})
+        Customer.belongsTo(models.GroupLevel, {foreignKey:'belongGroup'}),
+        Customer.hasMany(models.NeedVisited, {foreignKey:'uid'})
     }
 
     return Customer;

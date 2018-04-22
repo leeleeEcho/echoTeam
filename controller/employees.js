@@ -57,6 +57,7 @@ exports.getOneEmployees = (req, res) => {
     ]
     options.attributes =  { exclude: ['departmentId','role','createdAt','updatedAt'] };
     let where = {};
+    if(req.query.departmentId) where.departmentId = req.query.departmentId;
     return EmployeesInstance.findRecords(where, options)
         .then((data) => {
             return Promise.resolve(data);
@@ -74,23 +75,6 @@ exports.getOneEmployees = (req, res) => {
 //添加员工
 exports.insertEmployees = (req, res) => {
     let contents = {};
-    // if (req.body.userName) contents.userName = req.body.userName.replace(/\s+/g, "");
-    // if (req.body.password) contents.password = util.encryptPass(req.body.password);
-    // if (req.body.sex) contents.sex = req.body.sex;
-    // if (req.body.birthDate) contents.birthDate = req.body.birthDate;
-    // if (req.body.mobile) contents.mobile = req.body.mobile;
-    // if (req.body.workCode) contents.workCode = req.body.workCode;
-    // if (req.body.wechatQRCodeUrl) contents.wechatQRCodeUrl = req.body.wechatQRCodeUrl;
-    // if (req.body.entryDate) contents.entryDate = req.body.entryDate;
-    // if (req.body.regularDate) contents.regularDate = req.body.regularDate;
-    // if (req.body.post) contents.post = req.body.post;
-    // if (req.body.departmentId) contents.departmentId = req.body.departmentId;
-    // if (req.body.education) contents.education = req.body.education;
-    // if (req.body.school) contents.school = req.body.school;
-    // if (req.body.specialty) contents.specialty = req.body.specialty;
-    // if (req.body.payScale) contents.payScale = req.body.payScale;
-    // if (req.body.address) contents.address = req.body.address;
-    // if (req.body.phone) contents.phone = req.body.phone;
     contents = req.body;
     contents.userName = req.body.userName.replace(/\s+/g, "");
     contents.password = util.encryptPass(contents.password);

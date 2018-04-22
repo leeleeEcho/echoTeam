@@ -13,5 +13,8 @@ router.use('/role',require('./role'));//角色
 router.use('/followRecord',require('./followRecord'));//跟踪记录
 router.use('/customerConsult',require('./customerConsult'));//客户咨询
 router.use('/groupLevel',require('./groupLevel'));//客户组别
+router.use('/message',require('./message'));//短信模板
+router.use('/email',require('./email'));//邮件模板
+router.use('/needVisited',require('./needVisited'));//回访
 
 module.exports = router;

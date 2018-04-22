@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const logger = require('../lib/initLogger').logger.getLogger('customer');
 const redisService = require('../service/redisService');
 const util = require('../lib/util');
+const auth = require('../lib/auth');
 const _ = require('lodash');
 const statusMsg = require('../lib/statusMessage').msg;
 const Joi = require('joi');
@@ -13,36 +14,23 @@ const moment = require('moment');
 
 //新增客户
 exports.insertCustomer = (req, res) => {
+    if(!req.body.userName || !req.body.password ){
+        return Promise.reject({
+            message: statusMsg[40004] + ',userName,password为必需参数',
+            status: 40004,
+        })
+    }
     let contents = {};
-    //不确定必需字段，所以来啥存啥
-    // if (req.body.userName) contents.userName = req.body.userName.replace(/\s+/g, "");
-    // if (req.body.sex) contents.sex = req.body.sex;
-    // if (req.body.birthDate) contents.birthDate = req.body.birthDate;
-    // if (req.body.mobile) contents.mobile = req.body.mobile;
-    // if (req.body.QQ) contents.QQ = req.body.QQ;
-    // if (req.body.weChat) contents.weChat = req.body.weChat;
-    // if (req.body.email) contents.email = req.body.email;
-    // if (req.body.address) contents.address = req.body.address;
-    // if (req.body.province) contents.province = req.body.province;
-    // if (req.body.city) contents.city = req.body.city;
-    // if (req.body.belongSale) contents.belongSale = req.body.belongSale;
-    // if (req.body.customerFrom) contents.customerFrom = req.body.addcustomerFromress;
-    // if (req.body.interestLevel) contents.interestLevel = req.body.interestLevel;
-    // if (req.body.nextVixitTime) contents.nextVixitTime = req.body.nextVixitTime;
-    // if (req.body.belongGroup) contents.belongGroup = req.body.belongGroup;
-    // if (req.body.userStatus) contents.userStatus = req.body.userStatus;
-    // if (req.body.trueName) contents.trueName = req.body.trueName.replace(/\s+/g, "");
-    // if (req.body.password) contents.password = req.body.password;
-    // if (req.body.cash) contents.cash = req.body.cash;
-    // if (req.body.points) contents.points = req.body.points;
     contents = req.body;
-    contents.userName = req.body.userName.replace(/\s+/g, "");
-    contents.trueName = req.body.trueName.replace(/\s+/g, "");
+    if(contents.mobile){
+        contents.mobile = util.ReplaceEnglish(contents.mobile);
+    }
+    contents.userName = contents.userName ? contents.userName.replace(/\s+/g, "") : null;
+    contents.trueName = contents.trueName ? contents.trueName.replace(/\s+/g, "") : null;
     contents.password = util.encryptPass(contents.password);
-    contents.registerDate = moment();
+    contents.registerDate = moment().unix();
     contents.registerIP = req.connection.remoteAddress;
-    //contents.lastLoginDate = req.body.lastLoginDate;
-    //contents.lastLoginIP = req.body.lastLoginIP;
+    contents.userFreeStatus = 0;
     return CustomerInstance.insertRecords(contents)
         .then((data) => {
             return Promise.resolve(data);
@@ -59,14 +47,25 @@ exports.insertCustomer = (req, res) => {
 
 //客户列表
 exports.getCustomer = (req, res) => {
+    let where = {};
+    if(Number(req.query.type) === 1){//释放库
+        where.userFreeStatus = {$gt:0,$lt:3};
+    }else if(Number(req.query.type) === 2){
+        where.userFreeStatus = 3;//冷冻库
+    }else{
+        where.userFreeStatus = 0;//正常
+    }
     let options = {};
     options.include = [
         { model: Employees, attributes: ['userName'] }
     ]
     options.attributes = ['trueName','mobile','registerDate'];
-    options.limit = req.body.limit ? req.body.limit : 20;
-    options.offset = req.body.offset ? req.body.offset : 0;
-    let where = {};
+    options.limit = req.query.limit ? req.query.limit : 20;
+    options.offset = req.query.offset ? req.query.offset : 0;
+    
+    if(req.query.mobile) where.mobile = {$like:'%' + req.query.mobile + '%'};
+    if(req.query.trueName) where.trueName = {$like:'%' + req.query.trueName + '%'};
+    if(req.query.interestLevel) where.interestLevel = req.query.interestLevel;
     return CustomerInstance.findAllRecords(where, options)
         .then((data) => {
             return Promise.resolve(data);
@@ -81,5 +80,142 @@ exports.getCustomer = (req, res) => {
         })
 }
 
-//todo 新增客户，添加的备注要更新到跟踪记录表。uid关联。更新不需要再添加记录，有其他入口
+//编辑客户
+exports.updateCustomer = (req, res) => {
+    if(Number(req.body.id) === null){
+        return Promise.reject({
+            message: statusMsg[40001],
+            status: 40001
+        })
+    }
+    let id = req.body.id;
+    let contents = {};
+    contents = req.body;
+    if(contents.userName)  contents.userName = contents.userName.replace(/\s+/g, "");
+    if(contents.trueName)  contents.trueName = contents.trueName.replace(/\s+/g, "");
+    if(contents.password)  contents.password = util.encryptPass(contents.password);
+    delete contents['id'];
+    return CustomerInstance.updateRecords(contents,{id:id})
+        .then((data) => {
+            return Promise.resolve(data);
+        })
+        .catch((error) => {
+            logger.error(error.message + ',' + error.error);
+            return Promise.reject({
+                message: error.message,
+                status: 40001,
+                error: error.error
+            })
+        })
+}
 
+//客户删除
+exports.delCustomer = (req, res) => {
+    let body = req.body;
+    let options = {
+        ids: Joi.string().required()
+    }
+    let params = util.paramsValidate(body, options);
+    if (params.status && params.status === 40004) {
+        return Promise.reject({
+            message: params.message,
+            status: 40004
+        })
+    }
+    let idsArr = params.ids.split(',');//英文逗号隔开
+    return CustomerInstance.batchDeleteRecords({id:{$in:idsArr}})
+        .then((data) => {
+            return Promise.resolve(data);
+        })
+        .catch((error) => {
+            logger.error(error.message + ',' + error.error);
+            return Promise.reject({
+                message: error.message,
+                status: 50001,
+                error: error.error
+            })
+        })
+}
+
+//客户登陆
+exports.login = (req, res) => {
+    let body = req.body;
+    let options = {
+        userName: Joi.string().required(),
+        password: Joi.string().required(),
+    }
+    let params = util.paramsValidate(body, options);
+    if (params.status && params.status === 40004) {
+        return Promise.reject({
+            message: params.message,
+            status: 40004
+        })
+    }
+    let userName = params.userName;
+    let password = util.encryptPass(params.password);
+
+    return CustomerInstance.findRecords({ userName: userName })
+        .then((data) => {
+            if (!data) {
+                return Promise.reject({
+                    message: statusMsg[40009],
+                    status: 40009
+                })
+            }
+            if (password !== data.password) {
+                return Promise.reject({
+                    message: statusMsg[40008],
+                    status: 40008
+                })
+            }
+            let userName = data.userName;
+            let id = data.id;
+            let token = auth.sign({ userName: userName, id: id });
+            //签名存储
+            return redisService.setToken(token, id)
+                .then((info) => {
+                    data.token = token;
+                    let contents = {};
+                    //信息更新
+                    contents.lastLoginDate = moment().unix();
+                    contents.lastLoginIP = req.connection.remoteAddress;
+                    return CustomerInstance.updateRecords(contents,{id:id})
+                    .then(()=>{
+                        data.lastLoginDate = moment();
+                        data.lastLoginIP = req.connection.remoteAddress;
+                        return Promise.resolve(data);
+                    })
+                })
+        })
+        .catch((error) => {
+            logger.error(error.message + ',' + error.error);
+            return Promise.reject({
+                message: error.message,
+                status: 50002,
+                error: error.error
+            })
+        })
+}
+
+//释放客户
+exports.freeCustomer = (req, res) => {
+    if(Number(req.body.id) === null){
+        return Promise.reject({
+            message: statusMsg[40001],
+            status: 40001
+        })
+    }
+    let id = req.body.id;
+    return CustomerInstance.incrementRecords('userFreeStatus',{id:req.query.id})
+        .then((data) => {
+            return Promise.resolve(data);
+        })
+        .catch((error) => {
+            logger.error(error.message + ',' + error.error);
+            return Promise.reject({
+                message: error.message,
+                status: 40001,
+                error: error.error
+            })
+        })
+}
